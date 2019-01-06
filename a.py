@@ -209,8 +209,7 @@ class Voiture:
                 self.vit+=ee
             self.collide()
             self.anime()
-            if self in finits: self.classement=finits.index(self)
-            else: self.classement=calc_clas(self)
+            self.classement=calc_clas(self)
 
 class Player():
     def __init__(self):
@@ -267,7 +266,7 @@ def bb():
     for v in voitures:
         v.ts()
         if v.py<=-taille_circuit:
-            if not v in finits: finits.append(v)
+            if not [len(finits),v] in finits: finits.append([len(finits),v])
             v.finit=True
             v.freine()
         if v.vit > 0 or not v.finit: cond=False
@@ -376,7 +375,7 @@ for v in voitures:
     if not v.finit:
         finits.append( ["non classé",v] )
 
-for v in finits:
+for v.finits:
     fenetre.blit(fonte.render(v[0]+" : "+v[1].pos.nom,20,clt),[xx,yy])
     yy+=40
 pygame.display.update()
