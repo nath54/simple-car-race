@@ -37,7 +37,7 @@ imgmape=pygame.transform.scale(pygame.image.load("images/"+random.choice(maps)),
 voits=[]
 voits.append( ["Pierson v1",100,20,200,50,"v1.png",1000,10] )
 voits.append( ["chagear",150,10,150,60,"v2.png",1000,10] )
-voits.append( ["camior",80,5,100,70,"v3.png",800,3] )
+voits.append( ["camior",80,5,100,70,"v3.png",800,0] )
 voits.append( ["formoula2",250,35,50,70,"v4.png",8000,1] )
 
 vcts=[]
@@ -88,11 +88,24 @@ class Voiture:
             self.vit-=self.frein/self.az
             if self.vit <=0:
                 self.vit = 0
+    def collide(self):
+        sr=pygame.Rect(self.px,self.py,self.tx,self.ty)
+        r0=sr.rect.topleft
+        r1=sr.rect.topright
+        r2=sr.rect.midleft
+        r3=sr.rect.midright
+        r4=sr.rect.bottomleft
+        r5=sr.rect.bottomright
+        r6=sr.rect.midtop
+        r7=sr.rect.midbottom
+        for v in vts:
+            vr=pygame.Rect(v.px,v.py,v.tx,v.ty)
+            if sr.colliderect()
     def ts(self):
         if time.time()-self.dts > 1/self.az:
             self.py-=self.vit/self.az
             self.dist+=self.vit/self.az
-            ee=0.01
+            ee=0.1
             if self.vit > self.vit_max: self.vit=self.vit_max
             if self.vit > 0:
                 self.vit-=ee
@@ -216,11 +229,11 @@ while encour:
                 elif event.key==p1.tchs[1] : p1.vselec.freine()
                 elif event.key==p1.tchs[2] : p1.vselec.tourner(2)
                 elif event.key==p1.tchs[3] : p1.vselec.tourner(1)
-    if not p1.vselec.finit: cam=[0,tey/2-p1.vselec.py]
+    if not p1.vselec.finit or p1.vselec.vit > 0: cam=[0,tey/2-p1.vselec.py]
     else:
         p=None
         for b in bots:
-            if not b.vselec.finit: p=b
+            if not b.vselec.finit or b.vselec.vit > 0: p=b
         if p==None: p=p1
         cam=[0,tey/2-p.vselec.py]
     if afffps:
