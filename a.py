@@ -90,17 +90,55 @@ class Voiture:
                 self.vit = 0
     def collide(self):
         sr=pygame.Rect(self.px,self.py,self.tx,self.ty)
-        r0=sr.rect.topleft
-        r1=sr.rect.topright
-        r2=sr.rect.midleft
-        r3=sr.rect.midright
-        r4=sr.rect.bottomleft
-        r5=sr.rect.bottomright
-        r6=sr.rect.midtop
-        r7=sr.rect.midbottom
-        for v in vts:
+        r0=sr.topleft     #en haut à gauche
+        r1=sr.topright    #en haut à droite
+        r2=sr.midleft     #au milieu à gauche
+        r3=sr.midright    #au milieu à droite
+        r4=sr.bottomleft  #en bas à gauche
+        r5=sr.bottomright #en bas à droite
+        r6=sr.midtop      #au milieu en haut
+        r7=sr.midbottom   #au milieur en bas
+        for v in voitures:
             vr=pygame.Rect(v.px,v.py,v.tx,v.ty)
-            if sr.colliderect()
+            if v!=self and sr.colliderect(vr):
+                while vr.collidepoint(r0):
+                    self.py+=1
+                    self.px+=1
+                    sr=pygame.Rect(self.px,self.py,self.tx,self.ty)
+                    r0=sr.topleft
+                while vr.collidepoint(r1):
+                    self.py+=1
+                    self.px-=1
+                    sr=pygame.Rect(self.px,self.py,self.tx,self.ty)
+                    r1=sr.topright
+                while vr.collidepoint(r2):
+                    self.px+=1
+                    sr=pygame.Rect(self.px,self.py,self.tx,self.ty)
+                    r2=sr.midleft
+                while vr.collidepoint(r3):
+                    self.px-=1
+                    sr=pygame.Rect(self.px,self.py,self.tx,self.ty)
+                    r3=sr.midright
+                while vr.collidepoint(r4):
+                    self.py-=1
+                    self.px+=1
+                    sr=pygame.Rect(self.px,self.py,self.tx,self.ty)
+                    r4=sr.bottomleft
+                while vr.collidepoint(r5):  
+                    self.py-=1
+                    self.px-=1
+                    sr=pygame.Rect(self.px,self.py,self.tx,self.ty)
+                    r5=sr.bottomright
+                while vr.collidepoint(r6):
+                    self.py+=1
+                    sr=pygame.Rect(self.px,self.py,self.tx,self.ty)
+                    r6=sr.midtop
+                while vr.collidepoint(r7):
+                    self.py-=1
+                    sr=pygame.Rect(self.px,self.py,self.tx,self.ty)
+                    r7=sr.midbottom
+            if self.px<0: self.px=1
+            if self.px+self.tx>tex: self.px=tex-self.tx-1
     def ts(self):
         if time.time()-self.dts > 1/self.az:
             self.py-=self.vit/self.az
@@ -111,6 +149,7 @@ class Voiture:
                 self.vit-=ee
             elif self.vit < 0:
                 self.vit+=ee
+            self.collide()
 
 class Player():
     def __init__(self):
@@ -132,6 +171,7 @@ def aff():
     fenetre.blit(pygame.transform.scale(pygame.image.load("images/ligne.png"),[tex,75]),[0+cam[0],-taille_circuit+cam[1]])
     for t in trcvs: pygame.draw.rect(fenetre,t[0],(t[1],t[2],t[3],t[4]),0)
     pygame.draw.rect(fenetre,(250,250,250),(posrcx,posrcy,taillercx,taillercy),5)
+    pygame.draw.rect(fenetre,(200,200,200),(posrcx+int(cam[0]/tex*taillercx),posrcy+taillercy-int(cam[1]/taille_circuit*taillercy),int(taillercx),int(tey/taille_circuit*taillercy)),2)
     for v in voitures:
         if cam[0]+v.px < tex and cam[0]+v.px > 0 and cam[1]+v.py < tey+v.ty and cam[1]+v.py >0-v.ty :
             fenetre.blit(v.img,[v.px+cam[0],v.py+cam[1]])
@@ -153,8 +193,6 @@ def bb():
             v.finit=True
             v.freine()
         if v.vit > 0 or not v.finit: cond=False
-        if v.px > tex-v.tx: v.px=tex-v.tx
-        if v.px < 0+v.tx: v.px=0+v.tx
     if cond:
         encour=False
     
