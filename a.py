@@ -119,6 +119,7 @@ class Voiture:
         self.et_an=0
         self.danim=time.time()
         self.classement=0
+        self.vinh=35
     def accel(self):
         if time.time()-self.dac >= 1/self.az:
             self.dac=time.time()
@@ -134,7 +135,18 @@ class Voiture:
             self.dbg=time.time()
             if aa==1: self.px+=self.man/self.az
             else: self.px-=self.man/self.az
+    def trace1(self):
+        trcvs.append( [cltrc1,self.px+1,self.py+1,5,1] )
+        trcvs.append( [cltrc1,self.px+self.tx-6,self.py+1,5,1] )
+        trcvs.append( [cltrc1,self.px+1,self.py+self.ty-2,5,1] )
+        trcvs.append( [cltrc1,self.px+self.tx-6,self.py+self.ty-2,5,1] )
+    def trace2(self):
+        trcvs.append( [cltrc2,self.px+1,self.py+1,5,1] )
+        trcvs.append( [cltrc2,self.px+self.tx-6,self.py+1,5,1] )
+        trcvs.append( [cltrc2,self.px+1,self.py+self.ty-2,5,1] )
+        trcvs.append( [cltrc2,self.px+self.tx-6,self.py+self.ty-2,5,1] )
     def freine(self):
+        self.trace2()
         if time.time()-self.dfr > 1/self.az:
             self.dfr=time.time()
             self.vit-=self.frein/self.az
@@ -193,6 +205,9 @@ class Voiture:
             if self.px+self.tx>tex: self.px=tex-self.tx-1
             if self.py>0: self.py,self.vit=-1,0
             if self.py < -taille_circuit-2*tey : self.py , self.vit = -taille_circuit-2*tey + self.ty+1 , 0
+            if self.px < 100 or self.px > 900:
+                if self.vit > self.vinh: self.vit=self.vinh
+                self.trace1()
     def anime(self):
         if time.time()-self.danim >= 1/self.az and  ( self.et_an<len(self.anim_f) or not self.finit ):
             self.danim=time.time()
@@ -240,7 +255,9 @@ def aff():
     fenetre.blit(imgmape,[0+cam[0],-taille_circuit-tex*2+cam[1]])
     fenetre.blit(pygame.transform.scale(pygame.image.load("images/ligne.png"),[tex,75]),[0+cam[0],-100+cam[1]])
     fenetre.blit(pygame.transform.scale(pygame.image.load("images/ligne.png"),[tex,75]),[0+cam[0],-taille_circuit+cam[1]])
-    for t in trcvs: pygame.draw.rect(fenetre,t[0],(t[1],t[2],t[3],t[4]),0)
+    for t in trcvs:
+        if t[2]+cam[1] > 0 and t[2]+cam[1] < tey:
+            pygame.draw.rect(fenetre,t[0],(t[1]+cam[0],t[2]+cam[1],t[3],t[4]),0)
     pygame.draw.rect(fenetre,(250,250,250),(posrcx,posrcy,taillercx,taillercy),5)
     pygame.draw.rect(fenetre,(200,200,200),(posrcx+int(cam[0]/tex*taillercx),posrcy+taillercy-int(cam[1]/taille_circuit*taillercy),int(taillercx),int(tey/taille_circuit*taillercy)),2)
     for o in obtcs:
@@ -375,7 +392,7 @@ for v in voitures:
     if not v.finit:
         finits.append( ["non classé",v] )
 
-for v.finits:
+for v in finits:
     fenetre.blit(fonte.render(v[0]+" : "+v[1].pos.nom,20,clt),[xx,yy])
     yy+=40
 pygame.display.update()
