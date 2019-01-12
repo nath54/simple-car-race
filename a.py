@@ -235,7 +235,7 @@ class Player():
         self.nom=""
         self.age=0
         self.tchs=[]  # 0=acc 1=frein 2=tourner gauche 3=tourner droite
-        self.vs=0
+        self.vbcs=0
         self.camvoit=voitures[0]
 
 def calc_clas(vt):
@@ -312,6 +312,7 @@ def bot():
             aa=random.randint(1,4)
             if aa<=2: b.vselec.tourner(1)
             elif aa<=4: b.vselec.tourner(2)
+            if b.vselec.vit < 0 : b.vselec.freine()
 
 def begin():
     global voitures,bots
@@ -375,13 +376,12 @@ while encour:
                 elif event.key==p1.tchs[2] : p1.vselec.tourner(2)
                 elif event.key==p1.tchs[3] : p1.vselec.tourner(1)
                 elif event.key==p1.tchs[4] : p1.vselec.recul()
-                elif event.key==K_n:
-                    p1.vs+=1
-                    if p1.vs >= len(voitures): p1.vs=1
-                    print(p1.vs)
+            if event.key==K_n:
+                p1.vbcs+=1
+                if p1.vbcs >= len(voitures): p1.vbcs=1
     if not p1.vselec.finit or p1.vselec.vit > 0: cam=[0,tey/2-p1.vselec.py]
     else:
-        vv=voitures[p1.vs]
+        vv=voitures[p1.vbcs]
         cam=[0,tey/2-vv.py]
     if afffps:
         fps=int(1/(time.time()-tt))
@@ -390,8 +390,8 @@ while encour:
 
 ####
 
-pygame.draw.rect(fenetre,(105,125,186),(100,100,tex-100,tey-100),0)
-pygame.draw.rect(fenetre,(250,250,250),(100,100,tex-100,tey-100),5)
+pygame.draw.rect(fenetre,(105,125,186),(100,100,tex-200,tey-200),0)
+pygame.draw.rect(fenetre,(250,250,250),(100,100,tex-200,tey-200),5)
 fenetre.blit(font.render("Résultats",40,(250,150,150)),[350,150])
 xx,yy=300,300
 pos=1
@@ -403,6 +403,7 @@ for v in voitures:
 for v in finits:
     fenetre.blit(fonte.render(str(v[0])+" : "+str(v[1].pos.nom),20,clt),[xx,yy])
     yy+=40
+fenetre.blit(fonte.render("press any key to continue",20,clt),[tex/2,tey-50])
 pygame.display.update()
 
 encour2=True
@@ -411,6 +412,7 @@ while encour2:
         if event.type==QUIT: encour2=False
         elif event.type==KEYDOWN:
             if event.key==K_q: encour2=False
+            encour2=False
 
 
 
