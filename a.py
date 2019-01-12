@@ -42,11 +42,13 @@ maps=["mp_1.png","mp_1.png"]
 imgmape=pygame.transform.scale(pygame.image.load("images/"+random.choice(maps)),[tex,taille_circuit+tey*4])
 
 voits=[]
-voits.append( ["Pierson v1",100,20,200,50,"v1.png",1000,10] )
-voits.append( ["chagear",150,10,150,60,"v2.png",1000,10] )
+voits.append( ["Pierson v1",120,20,200,50,"v1.png",1000,10] )
+voits.append( ["chagear",180,10,150,60,"v2.png",1000,10] )
 voits.append( ["camior",80,5,100,70,"v3.png",800,1] )
-voits.append( ["formoula2",250,35,50,70,"v4.png",8000,1] )
-voits.append( ["bugive",80,55,80,40,"v5.png",2800,2] )
+voits.append( ["formoula2",250,35,50,70,"v4.png",8000,2] )
+voits.append( ["bugive",80,55,80,40,"v5.png",2800,4] )
+voits.append( ["tournay",95,25,400,50,"v6.png",400,4] )
+voits.append( ["givebue",75,75,75,75,"v7.png",8000,3] )
 
 vcts=[]
 
@@ -311,8 +313,10 @@ def bot():
             b.vselec.accel()
             aa=random.randint(1,4)
             if aa<=2: b.vselec.tourner(1)
-            elif aa<=4: b.vselec.tourner(2)
-            if b.vselec.vit < 0 : b.vselec.freine()
+            elif aa<=4: b. vselec.tourner(2)
+            if b.vselec.vit < 0 :
+                ee=random.randint(0,10)
+                if ee==1: b.vselec.freine()
 
 def begin():
     global voitures,bots
