@@ -120,6 +120,8 @@ class Voiture:
         self.danim=time.time()
         self.classement=0
         self.vinh=35
+        self.ee=2
+        self.rs=[[self.px+self.ee,self.py+self.ee],[self.px+self.ee,self.py+self.ty-self.ee],[self.px+self.tx-self.ee,self.py+self.ee],[self.px+self.tx-self.ee,self.py+self.ty-self.ee]]
     def accel(self):
         if time.time()-self.dac >= 1/self.az:
             self.dac=time.time()
@@ -136,15 +138,17 @@ class Voiture:
             if aa==1: self.px+=self.man/self.az
             else: self.px-=self.man/self.az
     def trace1(self):
-        trcvs.append( [cltrc1,self.px+1,self.py+1,5,1] )
-        trcvs.append( [cltrc1,self.px+self.tx-6,self.py+1,5,1] )
-        trcvs.append( [cltrc1,self.px+1,self.py+self.ty-2,5,1] )
-        trcvs.append( [cltrc1,self.px+self.tx-6,self.py+self.ty-2,5,1] )
+        self.rs=[[self.px+self.ee,self.py+self.ee],[self.px+self.ee,self.py+self.ty-self.ee],[self.px+self.tx-self.ee,self.py+self.ee],[self.px+self.tx-self.ee,self.py+self.ty-self.ee]]
+        if self.rs[0][0] < 100 or self.rs[0][0] > 900: trcvs.append( [cltrc1,self.rs[0][0],self.rs[0][1],self.ee,1] )
+        if self.rs[1][0] < 100 or self.rs[1][0] > 900: trcvs.append( [cltrc1,self.rs[1][0],self.rs[1][1],self.ee,1] )
+        if self.rs[2][0] < 100 or self.rs[2][0] > 900: trcvs.append( [cltrc1,self.rs[2][0],self.rs[2][1],self.ee,1] )
+        if self.rs[3][0] < 100 or self.rs[3][0] > 900: trcvs.append( [cltrc1,self.rs[3][0],self.rs[3][1],self.ee,1] )
     def trace2(self):
-        trcvs.append( [cltrc2,self.px+1,self.py+1,5,1] )
-        trcvs.append( [cltrc2,self.px+self.tx-6,self.py+1,5,1] )
-        trcvs.append( [cltrc2,self.px+1,self.py+self.ty-2,5,1] )
-        trcvs.append( [cltrc2,self.px+self.tx-6,self.py+self.ty-2,5,1] )
+        self.rs=[[self.px+self.ee,self.py+self.ee],[self.px+self.ee,self.py+self.ty-self.ee],[self.px+self.tx-self.ee,self.py+self.ee],[self.px+self.tx-self.ee,self.py+self.ty-self.ee]]
+        trcvs.append( [cltrc2,self.rs[0][0],self.rs[0][1],self.ee,1] )
+        trcvs.append( [cltrc2,self.rs[1][0],self.rs[1][1],self.ee,1] )
+        trcvs.append( [cltrc2,self.rs[2][0],self.rs[2][1],self.ee,1] )
+        trcvs.append( [cltrc2,self.rs[3][0],self.rs[3][1],self.ee,1] )
     def freine(self):
         self.trace2()
         if time.time()-self.dfr > 1/self.az:
@@ -231,7 +235,8 @@ class Player():
         self.nom=""
         self.age=0
         self.tchs=[]  # 0=acc 1=frein 2=tourner gauche 3=tourner droite
-        self.vselec=None
+        self.vs=0
+        self.camvoit=voitures[0]
 
 def calc_clas(vt):
     clas=[]
@@ -283,7 +288,10 @@ def bb():
     for v in voitures:
         v.ts()
         if v.py<=-taille_circuit:
-            if not [len(finits),v] in finits: finits.append([len(finits),v])
+            ye=False
+            for ff in finits:
+                if ff[1]==v: ye=True
+            if not ye: finits.append([len(finits),v])
             v.finit=True
             v.freine()
         if v.vit > 0 or not v.finit: cond=False
@@ -299,9 +307,9 @@ def bb():
 
 def bot():
     for b in bots:
-        if random.randint(1,2) == 1 and not b.vselec.finit:
+        if random.randint(1,1) == 1 and not b.vselec.finit:
             b.vselec.accel()
-            aa=random.randint(1,10)
+            aa=random.randint(1,4)
             if aa<=2: b.vselec.tourner(1)
             elif aa<=4: b.vselec.tourner(2)
 
@@ -351,7 +359,6 @@ pygame.key.set_repeat(40,30)
 
 p1=begin()
 azer()
-cambs=random.choice(bots)
 
 while encour:
     tt=time.time()
@@ -368,13 +375,14 @@ while encour:
                 elif event.key==p1.tchs[2] : p1.vselec.tourner(2)
                 elif event.key==p1.tchs[3] : p1.vselec.tourner(1)
                 elif event.key==p1.tchs[4] : p1.vselec.recul()
-                elif event.key==K_n: cambs=random.choice(bos)
+                elif event.key==K_n:
+                    p1.vs+=1
+                    if p1.vs >= len(voitures): p1.vs=1
+                    print(p1.vs)
     if not p1.vselec.finit or p1.vselec.vit > 0: cam=[0,tey/2-p1.vselec.py]
     else:
-        p=None
-        if len(finits)<len(voitures):
-            while cambs.vselec.finit: cambs=random.choice(bos)
-        if cambs != None: cam=[0,tey/2-cambs.vselec.py]
+        vv=voitures[p1.vs]
+        cam=[0,tey/2-vv.py]
     if afffps:
         fps=int(1/(time.time()-tt))
         fenetre.blit(fonte.render("fps : "+str(fps),20,clt),[tex-100,10])
@@ -393,7 +401,7 @@ for v in voitures:
         finits.append( ["non classé",v] )
 
 for v in finits:
-    fenetre.blit(fonte.render(v[0]+" : "+v[1].pos.nom,20,clt),[xx,yy])
+    fenetre.blit(fonte.render(str(v[0])+" : "+str(v[1].pos.nom),20,clt),[xx,yy])
     yy+=40
 pygame.display.update()
 
