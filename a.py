@@ -211,7 +211,7 @@ class Voiture:
             if self.px+self.tx>tex: self.px=tex-self.tx-1
             if self.py>0: self.py,self.vit=-1,0
             if self.py < -taille_circuit-2*tey : self.py , self.vit = -taille_circuit-2*tey + self.ty+1 , 0
-            if self.px < 100 or self.px > 900:
+            if self.px < 100 or self.px+self.tx > 900:
                 if self.vit > self.vinh: self.vit=self.vinh
                 self.trace1()
     def anime(self):
